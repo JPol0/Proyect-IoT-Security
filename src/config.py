@@ -13,6 +13,8 @@ class AppConfig:
     cooldown_seconds: float
     camera_index: int
     output_dir: Path
+    detector: str
+    yolo_model: str
     window_name: str = "IoT Security"
 
 
@@ -33,7 +35,7 @@ def parse_args() -> AppConfig:
     parser.add_argument(
         "--session-seconds",
         type=float,
-        default=10.0,
+        default=5.0,
         help="Seconds to keep the camera active per trigger",
     )
     parser.add_argument(
@@ -47,6 +49,18 @@ def parse_args() -> AppConfig:
         type=int,
         default=0,
         help="Camera index (0 is usually the built-in camera)",
+    )
+    parser.add_argument(
+        "--detector",
+        choices=("hog", "yolo"),
+        default="hog",
+        help="Detector backend to use",
+    )
+    parser.add_argument(
+        "--yolo-model",
+        type=str,
+        default="yolov8n.pt",
+        help="YOLO model name or path (used when --detector yolo)",
     )
     parser.add_argument(
         "--output-dir",
@@ -66,4 +80,6 @@ def parse_args() -> AppConfig:
         cooldown_seconds=cooldown_seconds,
         camera_index=args.camera,
         output_dir=args.output_dir,
+        detector=args.detector,
+        yolo_model=args.yolo_model,
     )

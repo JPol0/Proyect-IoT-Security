@@ -46,6 +46,12 @@ Ejemplo con ventana y capturas:
 python src/main.py --preview --save-captures --session-seconds 8 --cooldown 5 --camera 0
 ```
 
+Ejemplo con YOLO:
+
+```bash
+python src/main.py --preview --save-captures --detector yolo --yolo-model yolov8n.pt
+```
+
 Ejemplo solo detección (sin ventana ni capturas):
 
 ```bash

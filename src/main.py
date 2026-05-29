@@ -7,12 +7,13 @@ import cv2
 from camera import CameraConfig, open_camera, read_frame, release_camera
 from config import AppConfig, parse_args
 from detector import HogPersonDetector, scale_boxes
+from detector_yolo import YoloPersonDetector
 from evidence import save_frame
 from trigger_keyboard import wait_for_keypress
 from ui import close_windows, draw_boxes, draw_status, show_frame
 
 
-def run_session(config: AppConfig, detector: HogPersonDetector) -> None:
+def run_session(config: AppConfig, detector) -> None:
     camera = open_camera(CameraConfig(index=config.camera_index))
     if not camera.isOpened():
         print("No se pudo abrir la camara.")
@@ -69,7 +70,10 @@ def run_session(config: AppConfig, detector: HogPersonDetector) -> None:
 
 def main() -> None:
     config = parse_args()
-    detector = HogPersonDetector()
+    if config.detector == "yolo":
+        detector = YoloPersonDetector(config.yolo_model)
+    else:
+        detector = HogPersonDetector()
     print("Listo. Presiona cualquier tecla para activar la camara. (q para salir)")
 
     while True:
