@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import time
+import json
+from datetime import datetime
+import paho.mqtt.client as mqtt
 
 import cv2
 
@@ -13,7 +16,7 @@ from trigger_keyboard import wait_for_keypress
 from ui import close_windows, draw_boxes, draw_status, show_frame
 
 
-def run_session(config: AppConfig, detector) -> None:
+def run_session(config: AppConfig, detector) -> bool:
     camera = open_camera(CameraConfig(index=config.camera_index))
     if not camera.isOpened():
         print("No se pudo abrir la camara.")
@@ -66,7 +69,48 @@ def run_session(config: AppConfig, detector) -> None:
         print("Sesion finalizada: se detecto persona.")
     else:
         print("Sesion finalizada: no se detecto persona.")
+        
+    return detected_once
 
+
+MQTT_BROKER = "localhost"
+MQTT_PORT = 1883
+TOPIC_ALERTA = "seguridad/alerta_movimiento"
+TOPIC_CONFIRMACION = "seguridad/confirmacion_vision"
+
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("[ÉXITO] Conectado al Broker MQTT de forma local.")
+        client.subscribe(TOPIC_ALERTA)
+    else:
+        print(f"[ERROR] Conexión fallida. Código de retorno: {rc}")
+
+def get_on_message_handler(config, detector):
+    def on_message(client, userdata, msg):
+        payload = msg.payload.decode("utf-8")
+        print(f"\n[MENSAJE RECIBIDO] Tópico: {msg.topic} | Payload: {payload}")
+        
+        if payload == "MOVIMIENTO":
+            print("[PROCESO] Alerta de movimiento recibida. Activando verificación...")
+            
+            es_intruso = run_session(config, detector)
+            
+            if es_intruso:
+                timestamp_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                respuesta = {
+                    "estado": "intruso_confirmado",
+                    "timestamp": timestamp_actual
+                }
+            else:
+                respuesta = {
+                    "estado": "falsa_alarma"
+                }
+            
+            json_payload = json.dumps(respuesta)
+            client.publish(TOPIC_CONFIRMACION, json_payload)
+            print(f"[MQTT] Veredicto JSON enviado al ESP32: {json_payload}")
+
+    return on_message
 
 def main() -> None:
     config = parse_args()
@@ -74,15 +118,14 @@ def main() -> None:
         detector = YoloPersonDetector(config.yolo_model)
     else:
         detector = HogPersonDetector()
-    print("Listo. Presiona cualquier tecla para activar la camara. (q para salir)")
+    
+    usuario_mqtt = mqtt.Client()
+    usuario_mqtt.on_connect = on_connect
+    usuario_mqtt.on_message = get_on_message_handler(config, detector)
 
-    while True:
-        key = wait_for_keypress()
-        if key.lower() == "q":
-            print("Saliendo...")
-            break
-        run_session(config, detector)
-
+    print("Iniciando servicio de escucha perimetral en la Laptop...")
+    usuario_mqtt.connect(MQTT_BROKER, MQTT_PORT, 60)
+    usuario_mqtt.loop_forever()
 
 if __name__ == "__main__":
     main()
