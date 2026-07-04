@@ -15,6 +15,7 @@ class AppConfig:
     output_dir: Path
     detector: str
     yolo_model: str
+    trigger: str
     window_name: str = "IoT Security"
 
 
@@ -63,6 +64,12 @@ def parse_args() -> AppConfig:
         help="YOLO model name or path (used when --detector yolo)",
     )
     parser.add_argument(
+        "--trigger",
+        choices=("keyboard", "mqtt"),
+        default="keyboard",
+        help="Trigger backend to use",
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=Path("captures"),
@@ -82,4 +89,5 @@ def parse_args() -> AppConfig:
         output_dir=args.output_dir,
         detector=args.detector,
         yolo_model=args.yolo_model,
+        trigger=args.trigger,
     )

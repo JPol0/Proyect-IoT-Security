@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from typing import Callable, Any
 
 try:
     import msvcrt
@@ -20,3 +21,10 @@ def wait_for_keypress() -> str:
             except UnicodeDecodeError:
                 return ""
         time.sleep(0.05)
+
+
+def start_trigger(config: Any, detector: Any, session_runner: Callable[[Any, Any], bool]) -> None:
+    print("Presiona una tecla para activar la camara...")
+    wait_for_keypress()
+    session_runner(config, detector)
+

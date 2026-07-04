@@ -40,16 +40,20 @@ pip install -r requirements.txt
 
 El archivo principal es `src/main.py`. Ejecuta desde el entorno virtual activado.
 
-Ejemplo con ventana y capturas:
+El programa admite configurar el desencadenador (trigger) que activa la cámara mediante la opción `--trigger`:
+- `keyboard` (por defecto): Espera una pulsación de tecla local para iniciar la sesión.
+- `mqtt`: Escucha alertas en el broker MQTT (`seguridad/alerta_movimiento` con payload `MOVIMIENTO`) para iniciar la sesión y publica los resultados en `seguridad/confirmacion_vision`.
+
+Ejemplo con trigger de teclado (por defecto), ventana y capturas:
 
 ```bash
-python src/main.py --preview --save-captures --session-seconds 8 --cooldown 5 --camera 0
+python src/main.py --trigger keyboard --preview --save-captures --session-seconds 8 --cooldown 5 --camera 0
 ```
 
-Ejemplo con YOLO:
+Ejemplo con trigger MQTT y detector YOLO:
 
 ```bash
-python src/main.py --preview --save-captures --detector yolo --yolo-model yolov8n.pt
+python src/main.py --trigger mqtt --preview --save-captures --detector yolo --yolo-model yolov8n.pt
 ```
 
 Ejemplo solo detección (sin ventana ni capturas):
@@ -58,10 +62,9 @@ Ejemplo solo detección (sin ventana ni capturas):
 python src/main.py --session-seconds 8
 ```
 
-Al iniciar, el programa espera una tecla para activar la cámara. La sesión dura el tiempo configurado y luego se apaga.
-
 ## Notas
 
 - No subas `.venv/` al repositorio.
 - Si instalas nuevas librerías, actualiza `requirements.txt` manualmente o con `pip freeze > requirements.txt`.
 - Las capturas se guardan en `captures/` cuando `--save-captures` está activo.
+
