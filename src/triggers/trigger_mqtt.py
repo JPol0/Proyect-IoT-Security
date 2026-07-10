@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Callable, Any
 import paho.mqtt.client as mqtt
 
-MQTT_BROKER = "broker.hivemq.com"
+MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 TOPIC_ALERTA = "SeguridadJpol22/alertamovimiento"
 TOPIC_CONFIRMACION = "SeguridadJpol22/confirmacionvision"

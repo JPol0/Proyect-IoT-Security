@@ -67,4 +67,4 @@ python src/main.py --session-seconds 8
 - No subas `.venv/` al repositorio.
 - Si instalas nuevas librerías, actualiza `requirements.txt` manualmente o con `pip freeze > requirements.txt`.
 - Las capturas se guardan en `captures/` cuando `--save-captures` está activo.
-
+- Los registros se guardan en `logs/` cuando `--save-logs` está activo.

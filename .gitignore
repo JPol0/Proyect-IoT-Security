@@ -31,3 +31,5 @@ Thumbs.db
 
 # Evidence captures
 captures/
+logs/
+logs/log_eventos.json
