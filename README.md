@@ -68,3 +68,16 @@ python src/main.py --session-seconds 8
 - Si instalas nuevas librerías, actualiza `requirements.txt` manualmente o con `pip freeze > requirements.txt`.
 - Las capturas se guardan en `captures/` cuando `--save-captures` está activo.
 - Los registros se guardan en `logs/` cuando `--save-logs` está activo.
+
+## Configuración del Hardware
+
+El sistema incluye una capa física con un ESP32 que requiere la siguiente asignación de pines (GPIO):
+- **LED Verde:** GPIO 12
+- **LED Rojo:** GPIO 14
+- **LED Amarillo:** GPIO 27
+- **Simulador PIR:** GPIO 13
+
+**Librerías necesarias en Arduino IDE:**
+Para compilar y cargar el código en el ESP32, es obligatorio instalar:
+- `PubSubClient` (para la conexión MQTT).
+- Soporte para la tarjeta **ESP32** (por Espressif Systems) desde el Gestor de Tarjetas.
